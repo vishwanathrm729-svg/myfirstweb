@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Question for Apurva</title>
+    <style>
+        /* --- Global Setup --- */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            touch-action: none; 
+        }
+
+        /* --- Mobile Screen Simulator --- */
+        .mobile-screen {
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            max-height: 950px;
+            position: relative; /* This is the anchor for absolute elements */
+            background-color: #fff; 
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            /* Removed flex centering so we can manually position the box */
+            display: block; 
+        }
+
+        /* --- Full Background Image Layer (Blurred) --- */
+        .background-image-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('background.png'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            filter: blur(3px); 
+            transform: scale(1.05);
+        }
+
+        /* --- Main Content Card (Positioned 70% Down) --- */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 30px 20px;
+            width: 80%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            
+            /* --- NEW POSITIONING --- */
+            position: absolute;
+            top: 70%; /* Moves it down to the 70% mark */
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centers it exactly at that point */
+            
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #d63384;
+            margin-bottom: 30px;
+            margin-top: 0;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            line-height: 1.3;
+        }
+
+        /* --- Buttons --- */
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none;
+            outline: none;
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        #noBtn {
+            background-color: #e0e0e0;
+            color: #555;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 77, 109, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0); }
+        }
+
+        /* --- Background Floating Emojis --- */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            z-index: 20;
+            animation: fall linear forwards;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+        .bg-element {
+            position: absolute;
+            bottom: -50px;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp linear forwards;
+            opacity: 0.8; 
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen" id="mobileScreen">
+        
+        <div class="background-image-layer"></div>
+
+        <div class="container">
+            <h1 id="question">Apurva, Will you be my Valentine?</h1>
+            <div class="buttons">
+                <button id="yesBtn">YES</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionText = document.getElementById('question');
+        const mobileScreen = document.getElementById('mobileScreen');
+
+        function moveButton() {
+            const containerRect = mobileScreen.getBoundingClientRect();
+            const maxWidth = containerRect.width - noBtn.offsetWidth - 20;
+            const maxHeight = containerRect.height - noBtn.offsetHeight - 20;
+            const randomX = Math.floor(Math.random() * maxWidth);
+            const randomY = Math.floor(Math.random() * maxHeight);
+
+            // IMPORTANT: Move button out of the box so it can float freely on the screen
+            if (noBtn.parentNode !== mobileScreen) {
+                mobileScreen.appendChild(noBtn);
+            }
+
+            noBtn.style.position = 'absolute'; 
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.zIndex = '15';
+        }
+
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+        noBtn.addEventListener('mouseover', moveButton);
+
+        function triggerSuccess(message) {
+            questionText.innerText = message;
+            noBtn.style.display = 'none';
+            yesBtn.style.display = 'none';
+            createCelebrationConfetti();
+        }
+
+        yesBtn.addEventListener('click', () => { triggerSuccess("Yay! I Love You So So So Much! Apu❤️"); });
+        noBtn.addEventListener('click', () => { triggerSuccess("Nice try! But No means YES. See you on Valentine's Day! Apu😘"); });
+
+        function createCelebrationConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                mobileScreen.appendChild(confetti);
+            }
+        }
+
+        function createBackgroundElement() {
+            const element = document.createElement('div');
+            element.classList.add('bg-element');
+            const emojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '💕', '💞', '💓', '💗', '💖', '🥰', '😍', '😘', '💍', '🌹'];
+            element.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            element.style.left = Math.random() * 100 + '%';
+            element.style.fontSize = (Math.random() * 30 + 20) + 'px';
+            const duration = Math.random() * 5 + 5; 
+            element.style.animationDuration = duration + 's';
+            element.style.transform = `rotate(${Math.random() * 360}deg)`;
+            mobileScreen.appendChild(element);
+            setTimeout(() => element.remove(), duration * 1000);
+        }
+        setInterval(createBackgroundElement, 150);
+    </script>
+</body>
+</html>
